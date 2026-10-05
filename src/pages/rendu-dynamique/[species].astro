@@ -1,0 +1,42 @@
+---
+import penguins from "../../data/penguins.json";
+export const prerender = false;
+
+import Layout from "../../layouts/Layout.astro";
+import PlotFigure from "../../components/PlotFigure.astro";
+import * as Plot from "@observablehq/plot";
+
+const { species } = Astro.params;
+
+const filteredPenguins = penguins.filter(
+  (penguin) => penguin.species === species
+);
+
+const plotOptions = {
+  grid: true,
+  marks: [
+    Plot.dot(filteredPenguins, {
+      x: "culmen_length_mm",
+      y: "culmen_depth_mm",
+      fill: "species",
+      r: 4,
+      fillOpacity: 0.7,
+    }),
+  ],
+  x: {
+    label: "Longueur du culmen (mm)",
+  },
+  y: {
+    label: "Profondeur du culmen (mm)",
+  },
+  title: `Manchots ${species}`,
+};
+---
+
+<Layout title={`Manchots ${species}`}>
+  <h1>Manchots {species}</h1>
+
+  <p>{filteredPenguins.length} manchot(s) trouvé(s)</p>
+
+  <PlotFigure options={plotOptions} />
+</Layout>
