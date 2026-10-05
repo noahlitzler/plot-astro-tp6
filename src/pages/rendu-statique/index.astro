@@ -1,0 +1,17 @@
+---
+import penguins from "../../data/penguins.json";
+
+const species = [...new Set(penguins.map((penguin) => penguin.species))];
+---
+
+<h1>Rendu statique</h1>
+
+<ul>
+  {
+    species.map((specie) => (
+      <li>
+        <a href={`/rendu-statique/${specie}`}>{specie}</a>
+      </li>
+    ))
+  }
+</ul>
