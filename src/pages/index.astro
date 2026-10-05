@@ -1,21 +1,661 @@
 ---
-import PlotFigure from "../components/PlotFigure.astro";
-import Layout from "../layouts/Layout.astro";
-import * as Plot from "@observablehq/plot";
-import penguins from "../assets/penguins.json";
+import SiteNav from "../components/SiteNav.astro";
 ---
 
-<Layout>
-  <h1 class="text-2xl">Test Astro et Plot (Observablehq)</h1>
-  <PlotFigure
-    options={{
-      marks: [
-        Plot.dot(penguins, {
-          x: "culmen_length_mm",
-          y: "culmen_depth_mm",
-          stroke: "species",
-        }),
-      ],
-    }}
-  />
-</Layout>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Explorer - TP4</title>
+  </head>
+
+  <body>
+    <SiteNav active="" />
+
+    <main>
+      <section class="intro">
+        <p class="eyebrow">TP4 - GRAPHIQUES INTERACTIFS</p>
+
+        <h1>
+          Explorer les graphiques
+          <br />
+          côté client
+        </h1>
+
+        <p class="intro-text">
+          Six expériences pour tester la création de graphiques interactifs
+          directement dans le navigateur.
+        </p>
+      </section>
+
+      <section class="sommaire-section">
+        <div class="section-label">SOMMAIRE</div>
+
+        <nav class="sommaire">
+          <a href="#simple" class="sommaire-item">
+            <span class="sommaire-number">01</span>
+            <span class="sommaire-content">
+              <strong>Graphique simple</strong>
+              <small>Premier essai avec Plot côté client.</small>
+            </span>
+            <span class="arrow">→</span>
+          </a>
+
+          <a href="#simple-penguin" class="sommaire-item">
+            <span class="sommaire-number">02</span>
+            <span class="sommaire-content">
+              <strong>Simple Penguin</strong>
+              <small>Visualisation du dataset Penguins.</small>
+            </span>
+            <span class="arrow">→</span>
+          </a>
+
+          <a href="#penguin-filter" class="sommaire-item">
+            <span class="sommaire-number">03</span>
+            <span class="sommaire-content">
+              <strong>Penguin avec filtre</strong>
+              <small>Filtrer les données selon l'espèce.</small>
+            </span>
+            <span class="arrow">→</span>
+          </a>
+
+          <a href="#penguin-filters" class="sommaire-item">
+            <span class="sommaire-number">04</span>
+            <span class="sommaire-content">
+              <strong>Penguin avec plusieurs filtres</strong>
+              <small>Espèce, île et sexe.</small>
+            </span>
+            <span class="arrow">→</span>
+          </a>
+
+          <a href="#cars-filter" class="sommaire-item">
+            <span class="sommaire-number">05</span>
+            <span class="sommaire-content">
+              <strong>Cars avec filtre</strong>
+              <small>Le même principe avec le dataset Cars.</small>
+            </span>
+            <span class="arrow">→</span>
+          </a>
+
+          <a href="#diamonds-filter" class="sommaire-item">
+            <span class="sommaire-number">06</span>
+            <span class="sommaire-content">
+              <strong>Diamonds avec filtre</strong>
+              <small>Le même principe avec le dataset Diamonds.</small>
+            </span>
+            <span class="arrow">→</span>
+          </a>
+        </nav>
+      </section>
+
+      <section id="simple" class="experiment">
+        <div class="experiment-header">
+          <span class="experiment-number">01</span>
+
+          <div>
+            <p class="experiment-label">PREMIER ESSAI</p>
+            <h2>Graphique simple</h2>
+          </div>
+        </div>
+
+        <div id="plot" class="plot-container"></div>
+      </section>
+
+      <section id="simple-penguin" class="experiment">
+        <div class="experiment-header">
+          <span class="experiment-number">02</span>
+
+          <div>
+            <p class="experiment-label">DEUXIÈME ESSAI</p>
+            <h2>Simple Penguin</h2>
+          </div>
+        </div>
+
+        <div id="penguins-plot" class="plot-container"></div>
+      </section>
+
+      <section id="penguin-filter" class="experiment">
+        <div class="experiment-header">
+          <span class="experiment-number">03</span>
+
+          <div>
+            <p class="experiment-label">FILTRE SIMPLE</p>
+            <h2>Penguin avec filtre</h2>
+          </div>
+        </div>
+
+        <div class="filter-container">
+          <label for="species">Espèce</label>
+
+          <select name="species" id="species">
+            <option value="">Toutes les espèces</option>
+            <option value="Adelie">Adelie</option>
+            <option value="Chinstrap">Chinstrap</option>
+            <option value="Gentoo">Gentoo</option>
+          </select>
+        </div>
+
+        <div id="filtered-penguins-plot" class="plot-container"></div>
+      </section>
+
+      <section id="penguin-filters" class="experiment">
+        <div class="experiment-header">
+          <span class="experiment-number">04</span>
+
+          <div>
+            <p class="experiment-label">FILTRES MULTIPLES</p>
+            <h2>Penguin avec plusieurs filtres</h2>
+          </div>
+        </div>
+
+        <div class="filters">
+          <div class="filter-container">
+            <label for="species-multiple">Espèce</label>
+
+            <select name="species" id="species-multiple">
+              <option value="">Toutes les espèces</option>
+              <option value="Adelie">Adelie</option>
+              <option value="Chinstrap">Chinstrap</option>
+              <option value="Gentoo">Gentoo</option>
+            </select>
+          </div>
+
+          <div class="filter-container">
+            <label for="island">Île</label>
+
+            <select name="island" id="island">
+              <option value="">Toutes les îles</option>
+              <option value="Biscoe">Biscoe</option>
+              <option value="Dream">Dream</option>
+              <option value="Torgersen">Torgersen</option>
+            </select>
+          </div>
+
+          <div class="filter-container">
+            <label for="sex">Sexe</label>
+
+            <select name="sex" id="sex">
+              <option value="">Tous</option>
+              <option value="MALE">MALE</option>
+              <option value="FEMALE">FEMALE</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="multiple-penguins-plot" class="plot-container"></div>
+      </section>
+
+      <section id="cars-filter" class="experiment">
+        <div class="experiment-header">
+          <span class="experiment-number">05</span>
+
+          <div>
+            <p class="experiment-label">AUTRE DATASET</p>
+            <h2>Cars avec filtre</h2>
+          </div>
+        </div>
+
+        <div class="filter-container">
+          <label for="year">Année</label>
+
+          <select name="year" id="year">
+            <option value="">Toutes les années</option>
+            <option value="1970">1970</option>
+            <option value="1971">1971</option>
+            <option value="1972">1972</option>
+            <option value="1973">1973</option>
+            <option value="1974">1974</option>
+            <option value="1975">1975</option>
+            <option value="1976">1976</option>
+            <option value="1977">1977</option>
+            <option value="1978">1978</option>
+            <option value="1979">1979</option>
+            <option value="1980">1980</option>
+            <option value="1981">1981</option>
+            <option value="1982">1982</option>
+          </select>
+        </div>
+
+        <div id="cars-plot" class="plot-container"></div>
+      </section>
+
+      <section id="diamonds-filter" class="experiment">
+        <div class="experiment-header">
+          <span class="experiment-number">06</span>
+
+          <div>
+            <p class="experiment-label">AUTRE DATASET</p>
+            <h2>Diamonds avec filtre</h2>
+          </div>
+        </div>
+
+        <div class="filter-container">
+          <label for="cut">Qualité de taille</label>
+
+          <select name="cut" id="cut">
+            <option value="">Toutes les qualités</option>
+            <option value="Fair">Fair</option>
+            <option value="Good">Good</option>
+            <option value="Very Good">Very Good</option>
+            <option value="Premium">Premium</option>
+            <option value="Ideal">Ideal</option>
+          </select>
+        </div>
+
+        <div id="diamonds-plot" class="plot-container"></div>
+      </section>
+    </main>
+  </body>
+</html>
+
+<script>
+  import * as Plot from "@observablehq/plot";
+  import penguins from "../data/penguins.json";
+  import cars from "../data/cars.json";
+  import diamonds from "../data/diamonds.json";
+
+  const container = document.querySelector("#plot");
+
+  const plot = Plot.plot({
+    marks: [
+      Plot.barY([1, 2, 3, 4, 5], {
+        x: (d, i) => i + 1,
+        y: (d) => d,
+      }),
+    ],
+  });
+
+  container?.append(plot);
+
+  const penguinsContainer = document.querySelector("#penguins-plot");
+
+  const penguinsPlot = Plot.plot({
+    marks: [
+      Plot.dot(penguins, {
+        x: "culmen_length_mm",
+        y: "culmen_depth_mm",
+        stroke: "species",
+      }),
+    ],
+  });
+
+  penguinsContainer?.append(penguinsPlot);
+
+  const selectSpecies = document.querySelector("#species");
+  const filteredPenguinsContainer = document.querySelector(
+    "#filtered-penguins-plot",
+  );
+
+  function renderPlot() {
+    const species = (selectSpecies as HTMLSelectElement).value;
+
+    const filteredPenguins = species
+      ? penguins.filter(
+          ({ species: penguinSpecies }) => penguinSpecies === species,
+        )
+      : penguins;
+
+    if (filteredPenguinsContainer) {
+      filteredPenguinsContainer.innerHTML = "";
+
+      const filteredPlot = Plot.plot({
+        marks: [
+          Plot.dot(filteredPenguins, {
+            x: "culmen_length_mm",
+            y: "culmen_depth_mm",
+            stroke: "species",
+          }),
+        ],
+      });
+
+      filteredPenguinsContainer.append(filteredPlot);
+    }
+  }
+
+  selectSpecies?.addEventListener("change", renderPlot);
+
+  renderPlot();
+
+  const selectSpeciesMultiple = document.querySelector(
+    "#species-multiple",
+  );
+  const selectIsland = document.querySelector("#island");
+  const selectSex = document.querySelector("#sex");
+  const multiplePenguinsContainer = document.querySelector(
+    "#multiple-penguins-plot",
+  );
+
+  function renderMultiplePlot() {
+    const species = (selectSpeciesMultiple as HTMLSelectElement).value;
+    const island = (selectIsland as HTMLSelectElement).value;
+    const sex = (selectSex as HTMLSelectElement).value;
+
+    const filteredPenguins = penguins.filter((penguin) => {
+      const speciesMatch = !species || penguin.species === species;
+      const islandMatch = !island || penguin.island === island;
+      const sexMatch = !sex || penguin.sex === sex;
+
+      return speciesMatch && islandMatch && sexMatch;
+    });
+
+    if (multiplePenguinsContainer) {
+      multiplePenguinsContainer.innerHTML = "";
+
+      const multiplePlot = Plot.plot({
+        marks: [
+          Plot.dot(filteredPenguins, {
+            x: "culmen_length_mm",
+            y: "culmen_depth_mm",
+            stroke: "species",
+          }),
+        ],
+      });
+
+      multiplePenguinsContainer.append(multiplePlot);
+    }
+  }
+
+  selectSpeciesMultiple?.addEventListener(
+    "change",
+    renderMultiplePlot,
+  );
+
+  selectIsland?.addEventListener("change", renderMultiplePlot);
+
+  selectSex?.addEventListener("change", renderMultiplePlot);
+
+  renderMultiplePlot();
+
+  const selectYear = document.querySelector("#year");
+  const carsContainer = document.querySelector("#cars-plot");
+
+  function renderCarsPlot() {
+    const year = (selectYear as HTMLSelectElement).value;
+
+    const filteredCars = year
+      ? cars.filter((car) => String(car.year) === year)
+      : cars;
+
+    if (carsContainer) {
+      carsContainer.innerHTML = "";
+
+      const carsPlot = Plot.plot({
+        x: {
+          label: "Poids (lb)",
+        },
+        y: {
+          label: "Consommation (mpg)",
+        },
+        marks: [
+          Plot.dot(filteredCars, {
+            x: "weight (lb)",
+            y: "economy (mpg)",
+          }),
+        ],
+      });
+
+      carsContainer.append(carsPlot);
+    }
+  }
+
+  selectYear?.addEventListener("change", renderCarsPlot);
+
+  renderCarsPlot();
+
+  const selectCut = document.querySelector("#cut");
+  const diamondsContainer = document.querySelector("#diamonds-plot");
+
+  function renderDiamondsPlot() {
+    const cut = (selectCut as HTMLSelectElement).value;
+
+    const filteredDiamonds = cut
+      ? diamonds.filter((diamond) => diamond.cut === cut)
+      : diamonds;
+
+    if (diamondsContainer) {
+      diamondsContainer.innerHTML = "";
+
+      const diamondsPlot = Plot.plot({
+        x: {
+          label: "Carat",
+        },
+        y: {
+          label: "Prix",
+        },
+        marks: [
+          Plot.dot(filteredDiamonds, {
+            x: "carat",
+            y: "price",
+          }),
+        ],
+      });
+
+      diamondsContainer.append(diamondsPlot);
+    }
+  }
+
+  selectCut?.addEventListener("change", renderDiamondsPlot);
+
+  renderDiamondsPlot();
+</script>
+
+<style>
+  :global(html) {
+    scroll-behavior: smooth;
+  }
+
+  :global(body) {
+    margin: 0;
+    background: #fafafa;
+    color: #171717;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  main {
+    margin-left: 228px;
+  }
+
+  .intro {
+    padding: 120px 80px 90px;
+    border-bottom: 1px solid #dddddd;
+  }
+
+  .eyebrow {
+    margin: 0 0 22px;
+    color: #888888;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+  }
+
+  .intro h1 {
+    max-width: 900px;
+    margin: 0;
+    font-size: clamp(52px, 7vw, 100px);
+    line-height: 0.95;
+    letter-spacing: -0.06em;
+  }
+
+  .intro-text {
+    max-width: 600px;
+    margin: 35px 0 0;
+    color: #666666;
+    font-size: 17px;
+    line-height: 1.6;
+  }
+
+  .sommaire-section {
+    padding: 80px;
+  }
+
+  .section-label {
+    margin-bottom: 25px;
+    color: #888888;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+  }
+
+  .sommaire {
+    display: grid;
+    gap: 12px;
+  }
+
+  .sommaire-item {
+    display: grid;
+    grid-template-columns: 42px 1fr 30px;
+    align-items: center;
+    min-height: 110px;
+    padding: 22px;
+    border: 1px solid #dddddd;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #171717;
+    text-decoration: none;
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .sommaire-item:hover {
+    transform: translateX(5px);
+    border-color: #aaaaaa;
+  }
+
+  .sommaire-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #eeeeee;
+    color: #555555;
+    font-size: 11px;
+  }
+
+  .sommaire-content {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .sommaire-content strong {
+    font-size: 17px;
+  }
+
+  .sommaire-content small {
+    color: #777777;
+    font-size: 13px;
+  }
+
+  .arrow {
+    color: #777777;
+    font-size: 22px;
+  }
+
+  .experiment {
+    padding: 90px 80px 120px;
+    border-top: 1px solid #dddddd;
+    scroll-margin-top: 20px;
+  }
+
+  .experiment-header {
+    display: grid;
+    grid-template-columns: 42px 1fr;
+    gap: 0;
+    margin-bottom: 65px;
+  }
+
+  .experiment-number {
+    padding-top: 6px;
+    color: #888888;
+    font-size: 11px;
+  }
+
+  .experiment-label {
+    margin: 0 0 10px;
+    color: #888888;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+  }
+
+  .experiment h2 {
+    margin: 0;
+    font-size: clamp(40px, 5vw, 64px);
+    line-height: 1;
+    letter-spacing: -0.05em;
+  }
+
+  .plot-container {
+    width: 100%;
+    max-width: 900px;
+    min-height: 400px;
+  }
+
+  .filter-container {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    width: 240px;
+    margin-bottom: 40px;
+  }
+
+  .filter-container label {
+    color: #777777;
+    font-size: 12px;
+  }
+
+  .filter-container select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #171717;
+    font: inherit;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    margin-bottom: 40px;
+  }
+
+  .filters .filter-container {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 800px) {
+    main {
+      margin-left: 0;
+    }
+
+    .intro,
+    .sommaire-section,
+    .experiment {
+      padding-left: 25px;
+      padding-right: 25px;
+    }
+
+    .intro {
+      padding-top: 70px;
+    }
+
+    .sommaire-item {
+      grid-template-columns: 35px 1fr 20px;
+      padding: 16px;
+    }
+
+    .experiment-header {
+      margin-bottom: 40px;
+    }
+
+    .filters {
+      flex-direction: column;
+    }
+
+    .filter-container {
+      width: 100%;
+    }
+  }
+</style>

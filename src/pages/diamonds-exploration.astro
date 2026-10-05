@@ -1,0 +1,192 @@
+---
+import diamonds from "../data/diamonds.json";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Diamonds" active="diamonds">
+  <main class="page">
+    <h1>Diamonds</h1>
+
+    <p class="intro">
+      Explorez les diamants en filtrant les données par taille, couleur et pureté.
+    </p>
+
+    <section class="filters">
+      <div class="filter">
+        <label for="cut">Cut</label>
+        <select id="cut">
+          <option value="">Tous</option>
+          {
+            [...new Set(diamonds.map((diamond) => diamond.cut))].map((cut) => (
+              <option value={cut}>{cut}</option>
+            ))
+          }
+        </select>
+      </div>
+
+      <div class="filter">
+        <label for="color">Color</label>
+        <select id="color">
+          <option value="">Toutes</option>
+          {
+            [...new Set(diamonds.map((diamond) => diamond.color))].map(
+              (color) => <option value={color}>{color}</option>
+            )
+          }
+        </select>
+      </div>
+
+      <div class="filter">
+        <label for="clarity">Clarity</label>
+        <select id="clarity">
+          <option value="">Toutes</option>
+          {
+            [...new Set(diamonds.map((diamond) => diamond.clarity))].map(
+              (clarity) => <option value={clarity}>{clarity}</option>
+            )
+          }
+        </select>
+      </div>
+    </section>
+
+    <p id="count"></p>
+
+    <div id="plot"></div>
+  </main>
+</Layout>
+
+<script>
+  import * as Plot from "@observablehq/plot";
+  import diamonds from "../data/diamonds.json";
+
+  const selectCut =
+    document.querySelector("#cut") as HTMLSelectElement;
+
+  const selectColor =
+    document.querySelector("#color") as HTMLSelectElement;
+
+  const selectClarity =
+    document.querySelector("#clarity") as HTMLSelectElement;
+
+  const plotContainer =
+    document.querySelector("#plot") as HTMLDivElement;
+
+  const count =
+    document.querySelector("#count") as HTMLParagraphElement;
+
+  function renderPlot() {
+    const cut = selectCut.value;
+    const color = selectColor.value;
+    const clarity = selectClarity.value;
+
+    const filteredDiamonds = diamonds.filter((diamond) => {
+      return (
+        (cut === "" || diamond.cut === cut) &&
+        (color === "" || diamond.color === color) &&
+        (clarity === "" || diamond.clarity === clarity)
+      );
+    });
+
+    plotContainer.innerHTML = "";
+
+    const plot = Plot.plot({
+      grid: true,
+      marks: [
+        Plot.dot(filteredDiamonds, {
+          x: "carat",
+          y: "price",
+          fill: "cut",
+          r: 3,
+          fillOpacity: 0.5,
+          title: (diamond) =>
+            `${diamond.cut} · ${diamond.color} · ${diamond.clarity}`,
+        }),
+      ],
+      x: {
+        label: "Carat",
+      },
+      y: {
+        label: "Prix",
+      },
+    });
+
+    plotContainer.append(plot);
+
+    count.textContent = `${filteredDiamonds.length} diamant(s)`;
+  }
+
+  selectCut.addEventListener("change", renderPlot);
+  selectColor.addEventListener("change", renderPlot);
+  selectClarity.addEventListener("change", renderPlot);
+
+  renderPlot();
+</script>
+
+<style>
+  .page {
+    max-width: 1200px;
+    margin-left: 228px;
+    padding: 50px;
+    box-sizing: border-box;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 42px;
+  }
+
+  .intro {
+    margin-top: 8px;
+    color: #666;
+  }
+
+  .filters {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 35px 0 20px;
+  }
+
+  .filter {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  select {
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid #d6d6d6;
+    border-radius: 4px;
+    background: white;
+    font-size: 14px;
+  }
+
+  #count {
+    color: #666;
+    font-size: 14px;
+  }
+
+  #plot {
+    margin-top: 25px;
+    min-height: 450px;
+  }
+
+  @media (max-width: 800px) {
+    .page {
+      margin-left: 0;
+      padding: 30px 20px;
+    }
+
+    .filters {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

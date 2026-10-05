@@ -1,17 +1,45 @@
 ---
 import penguins from "../../data/penguins.json";
+import Layout from "../../layouts/Layout.astro";
 
 const species = [...new Set(penguins.map((penguin) => penguin.species))];
 ---
 
-<h1>Rendu statique</h1>
+<Layout title="Rendu statique" active="statique">
+  <main class="page">
+    <h1>Rendu statique</h1>
 
-<ul>
-  {
-    species.map((specie) => (
-      <li>
-        <a href={`/rendu-statique/${specie}`}>{specie}</a>
-      </li>
-    ))
+    <p>
+      Choisissez une espèce pour afficher les données générées statiquement.
+    </p>
+
+    <ul>
+      {
+        species.map((specie) => (
+          <li>
+            <a href={`/rendu-statique/${specie}`}>{specie}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+</Layout>
+
+<style>
+  .page {
+    margin-left: 268px;
+    padding: 50px;
   }
-</ul>
+
+  h1 {
+    font-size: 42px;
+  }
+
+  li {
+    margin: 10px 0;
+  }
+
+  a {
+    color: #111;
+  }
+</style>

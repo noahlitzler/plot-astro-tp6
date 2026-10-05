@@ -1,0 +1,194 @@
+---
+import penguins from "../data/penguins.json";
+import Layout from "../layouts/Layout.astro";
+
+const species = [...new Set(penguins.map((penguin) => penguin.species))];
+const islands = [...new Set(penguins.map((penguin) => penguin.island))];
+const sexes = [...new Set(penguins.map((penguin) => penguin.sex).filter(Boolean))];
+---
+
+<Layout title="Penguins" active="penguins">
+  <main class="page">
+    <h1>Penguins</h1>
+
+    <p class="intro">
+      Explorez les manchots en filtrant les données par espèce, île et sexe.
+    </p>
+
+    <section class="filters">
+      <div class="filter">
+        <label for="species">Espèce</label>
+        <select id="species">
+          <option value="">Toutes</option>
+          {
+            species.map((specie) => (
+              <option value={specie}>{specie}</option>
+            ))
+          }
+        </select>
+      </div>
+
+      <div class="filter">
+        <label for="island">Île</label>
+        <select id="island">
+          <option value="">Toutes</option>
+          {
+            islands.map((island) => (
+              <option value={island}>{island}</option>
+            ))
+          }
+        </select>
+      </div>
+
+      <div class="filter">
+        <label for="sex">Sexe</label>
+        <select id="sex">
+          <option value="">Tous</option>
+          {
+            sexes.map((sex) => (
+              <option value={sex}>{sex}</option>
+            ))
+          }
+        </select>
+      </div>
+    </section>
+
+    <p id="count"></p>
+
+    <div id="plot"></div>
+  </main>
+</Layout>
+
+<script>
+  import * as Plot from "@observablehq/plot";
+  import penguins from "../data/penguins.json";
+
+  const selectSpecies =
+    document.querySelector("#species") as HTMLSelectElement;
+
+  const selectIsland =
+    document.querySelector("#island") as HTMLSelectElement;
+
+  const selectSex =
+    document.querySelector("#sex") as HTMLSelectElement;
+
+  const plotContainer =
+    document.querySelector("#plot") as HTMLDivElement;
+
+  const count =
+    document.querySelector("#count") as HTMLParagraphElement;
+
+  function renderPlot() {
+    const species = selectSpecies.value;
+    const island = selectIsland.value;
+    const sex = selectSex.value;
+
+    const filteredPenguins = penguins.filter((penguin) => {
+      return (
+        (species === "" || penguin.species === species) &&
+        (island === "" || penguin.island === island) &&
+        (sex === "" || penguin.sex === sex)
+      );
+    });
+
+    plotContainer.innerHTML = "";
+
+    const plot = Plot.plot({
+      grid: true,
+      marks: [
+        Plot.dot(filteredPenguins, {
+          x: "culmen_length_mm",
+          y: "culmen_depth_mm",
+          fill: "species",
+          title: (penguin) =>
+            `${penguin.species} · ${penguin.island} · ${penguin.sex}`,
+        }),
+      ],
+      x: {
+        label: "Longueur du culmen (mm)",
+      },
+      y: {
+        label: "Profondeur du culmen (mm)",
+      },
+    });
+
+    plotContainer.append(plot);
+
+    count.textContent = `${filteredPenguins.length} manchot(s)`;
+  }
+
+  selectSpecies.addEventListener("change", renderPlot);
+  selectIsland.addEventListener("change", renderPlot);
+  selectSex.addEventListener("change", renderPlot);
+
+  renderPlot();
+</script>
+
+<style>
+  .page {
+    max-width: 1200px;
+    margin-left: 228px;
+    padding: 50px;
+    box-sizing: border-box;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 42px;
+  }
+
+  .intro {
+    margin-top: 8px;
+    color: #666;
+  }
+
+  .filters {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 35px 0 20px;
+  }
+
+  .filter {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  select {
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid #d6d6d6;
+    border-radius: 4px;
+    background: white;
+    font-size: 14px;
+  }
+
+  #count {
+    color: #666;
+    font-size: 14px;
+  }
+
+  #plot {
+    margin-top: 25px;
+    min-height: 450px;
+  }
+
+  @media (max-width: 800px) {
+    .page {
+      margin-left: 0;
+      padding: 30px 20px;
+    }
+
+    .filters {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
